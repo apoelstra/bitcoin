@@ -115,7 +115,7 @@ BasicTestingSetup::BasicTestingSetup(const std::string& chainName, const std::ve
 BasicTestingSetup::~BasicTestingSetup()
 {
     LogInstance().DisconnectTestLogger();
-    fs::remove_all(m_path_root);
+//    fs::remove_all(m_path_root);
     gArgs.ClearArgs();
     ECC_Stop();
 }

@@ -521,6 +521,7 @@ public:
         int changePos = -1;
         bilingual_str error;
         CCoinControl dummy;
+        dummy.m_feerate = CFeeRate(100);
         {
             BOOST_CHECK(wallet->CreateTransaction({recipient}, tx, fee, changePos, error, dummy));
         }
@@ -562,6 +563,10 @@ BOOST_FIXTURE_TEST_CASE(ListCoins, ListCoinsTestingSetup)
 
     // Check initial balance from one mature coinbase transaction.
     BOOST_CHECK_EQUAL(50 * COIN, wallet->GetAvailableBalance());
+
+    // Will this fail ? andrew
+    AddTx(CRecipient{GetScriptForRawPubKey({}), 50 * COIN, true /* subtract fee */});
+    BOOST_CHECK(false);
 
     // Add a transaction creating a change address, and confirm ListCoins still
     // returns the coin associated with the change address underneath the

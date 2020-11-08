@@ -2733,7 +2733,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
 
     CMutableTransaction txNew;
     FeeCalculation feeCalc;
-    CAmount nFeeNeeded;
+    CAmount nFeeNeeded = 80085;
     int nBytes;
     {
         std::set<CInputCoin> setCoins;
@@ -2797,6 +2797,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
             // Start with no fee and loop until there is enough fee
             while (true)
             {
+WalletLogPrintf("Enter main CreateTransaction loop, nFeeRet %i nFeeNeeded %i, pick_new_inputs %d\n", nFeeRet, nFeeNeeded, pick_new_inputs);
                 nChangePosInOut = nChangePosRequest;
                 txNew.vin.clear();
                 txNew.vout.clear();
@@ -2872,6 +2873,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                             return false;
                         }
                     }
+WalletLogPrintf("pass SelectCoins bnb_used %d\n", bnb_used);
                 } else {
                     bnb_used = false;
                 }
@@ -2889,6 +2891,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                     {
                         nChangePosInOut = -1;
                         nFeeRet += nChange;
+WalletLogPrintf(" bump nFeeRet to %i from %i\n", nFeeRet - nChange, nFeeRet);
                     }
                     else
                     {
@@ -2917,6 +2920,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                 }
 
                 nBytes = CalculateMaximumSignedTxSize(CTransaction(txNew), this, coin_control.fAllowWatchOnly);
+
                 if (nBytes < 0) {
                     error = _("Signing transaction failed");
                     return false;
@@ -2929,6 +2933,7 @@ bool CWallet::CreateTransaction(const std::vector<CRecipient>& vecSend, CTransac
                     return false;
                 }
 
+WalletLogPrintf("   compare nFeeRet %i to nFeeNeeded %i (nBytes %i)\n", nFeeRet, nFeeNeeded, nBytes);
                 if (nFeeRet >= nFeeNeeded) {
                     // Reduce fee to only the needed amount if possible. This
                     // prevents potential overpayment in fees if the coins
